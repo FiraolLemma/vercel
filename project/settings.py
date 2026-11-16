@@ -11,9 +11,7 @@ load_dotenv(BASE_DIR / '.env.local')
 load_dotenv(BASE_DIR / '.env')
 
 # Environment configuration
-DEBUG = os.getenv('DEBUG', 'False').strip().lower() in {
-    '1', 'true', 'yes', 'on'
-}
+DEBUG = True
 IS_VERCEL = os.getenv('VERCEL', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
