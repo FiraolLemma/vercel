@@ -1,9 +1,4 @@
+
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "project/asgi.py": {
-      "maxDuration": 60,
-      "excludeFiles": "media/**"
-    }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }
