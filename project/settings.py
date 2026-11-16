@@ -122,41 +122,44 @@ ASGI_APPLICATION = 'project.asgi.application'
 WSGI_APPLICATION = 'project.wsgi.application'
 DAPHNE_TIMEOUT = 50
 DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
-    import dj_database_url
 
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=not DEBUG,
-        )
-    }
-elif IS_VERCEL:
+if not DATABASE_URL:
     raise ImproperlyConfigured(
-        'DATABASE_URL is required on Vercel. Configure a persistent PostgreSQL database.'
-    )
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-if IS_VERCEL and not os.getenv('REDIS_URL'):
-    raise ImproperlyConfigured(
-        'REDIS_URL is required on Vercel for Django Channels.'
+        'DATABASE_URL is missing. Configure PostgreSQL on Vercel.'
     )
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL],
-        },
-    },
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=0 if IS_VERCEL else 600,
+        ssl_require=not DEBUG,
+    )
 }
+
+REDIS_URL = os.getenv('REDIS_URL')
+
+if IS_VERCEL and not REDIS_URL:
+    raise ImproperlyConfigured(
+        'REDIS_URL is missing. Configure Redis on Vercel.'
+    )
+
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
 
 AUTH_USER_MODEL = 'users.CustomUser'
 AUTHENTICATION_BACKENDS = ['users.backends.UsernamePhoneBackend']

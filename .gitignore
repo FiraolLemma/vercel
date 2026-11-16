@@ -64,3 +64,10 @@ db.sqlite3
 *.orig
 *.tmp
 .neon
+
+.env
+.env.local
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
