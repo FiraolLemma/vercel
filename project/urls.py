@@ -73,7 +73,6 @@ urlpatterns += i18n_patterns(
         ),
     ),
     path('cart/', include('cart.urls', namespace='cart')),
-    path("__reload__/", include("django_browser_reload.urls")),
     path("admin-app/", include("admin_app.urls", namespace="admin_app")),
 )
 
