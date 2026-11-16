@@ -7,10 +7,14 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env.local')
 load_dotenv(BASE_DIR / '.env')
 
 # Environment configuration
 DEBUG = os.getenv('DEBUG', 'False').strip().lower() in {
+    '1', 'true', 'yes', 'on'
+}
+IS_VERCEL = os.getenv('VERCEL', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
 
@@ -18,7 +22,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 if not SECRET_KEY:
     raise ImproperlyConfigured(
-        'SECRET_KEY is missing. Check your .env file.'
+        'SECRET_KEY is missing. Set it in the environment or a local .env file.'
     )
 ALLOWED_HOSTS = [
     host.strip()
@@ -26,8 +30,15 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 render_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-if render_hostname and render_hostname not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(render_hostname)
+vercel_hostnames = [
+    os.getenv('VERCEL_URL'),
+    os.getenv('VERCEL_BRANCH_URL'),
+]
+for hostname in [render_hostname, *vercel_hostnames]:
+    if hostname and hostname not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(hostname)
+if IS_VERCEL and '.vercel.app' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.vercel.app')
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip().rstrip('/')
@@ -36,12 +47,18 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 if DEBUG:
     CSRF_TRUSTED_ORIGINS.extend(['http://localhost:8000', 'http://127.0.0.1:8000'])
-if render_hostname:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{render_hostname}')
+for hostname in [render_hostname, *vercel_hostnames]:
+    if hostname:
+        CSRF_TRUSTED_ORIGINS.append(f'https://{hostname}')
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
 
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if os.getenv('RENDER') else None
+SECURE_PROXY_SSL_HEADER = (
+    ('HTTP_X_FORWARDED_PROTO', 'https')
+    if IS_VERCEL or os.getenv('RENDER')
+    else None
+)
 
 LANGUAGES = [
     ('en', _('English')),
@@ -106,12 +123,33 @@ ROOT_URLCONF = 'project.urls'
 ASGI_APPLICATION = 'project.asgi.application'
 WSGI_APPLICATION = 'project.wsgi.application'
 DAPHNE_TIMEOUT = 50
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
     }
-}
+elif IS_VERCEL:
+    raise ImproperlyConfigured(
+        'DATABASE_URL is required on Vercel. Configure a persistent PostgreSQL database.'
+    )
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+if IS_VERCEL and not os.getenv('REDIS_URL'):
+    raise ImproperlyConfigured(
+        'REDIS_URL is required on Vercel for Django Channels.'
+    )
 
 CHANNEL_LAYERS = {
     "default": {
@@ -146,9 +184,41 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
 STATICFILES_DIRS = [ BASE_DIR / "static",]  
+cloudinary_credentials = (
+    os.getenv('CLOUDINARY_CLOUD_NAME'),
+    os.getenv('CLOUDINARY_API_KEY'),
+    os.getenv('CLOUDINARY_API_SECRET'),
+)
+if any(cloudinary_credentials) and not all(cloudinary_credentials):
+    raise ImproperlyConfigured(
+        'Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET together.'
+    )
+if IS_VERCEL and not all(cloudinary_credentials):
+    raise ImproperlyConfigured(
+        'Cloudinary credentials are required on Vercel because its filesystem is ephemeral.'
+    )
+if all(cloudinary_credentials):
+    import cloudinary
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': cloudinary_credentials[0],
+        'API_KEY': cloudinary_credentials[1],
+        'API_SECRET': cloudinary_credentials[2],
+    }
+    cloudinary.config(
+        cloud_name=cloudinary_credentials[0],
+        api_key=cloudinary_credentials[1],
+        api_secret=cloudinary_credentials[2],
+    )
+    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
+
 STORAGES = {
     'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'BACKEND': (
+            'cloudinary_storage.storage.MediaCloudinaryStorage'
+            if all(cloudinary_credentials)
+            else 'django.core.files.storage.FileSystemStorage'
+        ),
     },
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',

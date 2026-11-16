@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Complete your profile" %}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'users/css/profile_update.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="simple-profile_update">
+    <header class="profile-update-header">
+        <p>{% trans "Step 2 of 2" %}</p>
+        <h1>{% trans "Complete your profile" %}</h1>
+        <p>{% trans "Add your public details to finish setting up your account." %}</p>
+        {% if user.pin_setup_required %}
+            <p>{% trans "Your existing account needs a new 4-digit PIN before you continue." %}</p>
+        {% endif %}
+    </header>
+
+    {% if form.errors %}
+        <div class="error-message" role="alert" aria-live="polite">
+            {% trans "Please review the highlighted fields and correct the errors." %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="simple-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% if user.pin_setup_required %}
+            <section class="profile-update-section" aria-labelledby="pin-setup-heading">
+                <h2 id="pin-setup-heading">{% trans "Choose your sign-in PIN" %}</h2>
+                <div class="form-row">
+                    <label for="{{ form.pin1.id_for_label }}">{{ form.pin1.label }}</label>
+                    {{ form.pin1 }}{{ form.pin1.errors }}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.pin2.id_for_label }}">{{ form.pin2.label }}</label>
+                    {{ form.pin2 }}{{ form.pin2.errors }}
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="profile-update-section" aria-labelledby="account-details-heading">
+            <h2 id="account-details-heading">{% trans "Account details" %}</h2>
+            <div class="form-row">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}{{ form.username.errors }}
+            </div>
+            <div class="form-row">
+                <label>{% trans "Phone number" %}</label>
+                <div class="readonly-field">{{ user.phone_number }}</div>
+            </div>
+        </section>
+
+        <section class="profile-update-section" aria-labelledby="public-profile-heading">
+            <h2 id="public-profile-heading">{% trans "Public profile" %}</h2>
+            <div class="form-row">
+                <label for="{{ form.profile_picture.id_for_label }}">{{ form.profile_picture.label }}</label>
+                {{ form.profile_picture }}{{ form.profile_picture.errors }}
+            </div>
+            <div class="form-row">
+                <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+                {{ form.bio }}{{ form.bio.errors }}
+            </div>
+            <div class="form-row">
+                <label for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+                {{ form.location }}{{ form.location.errors }}
+            </div>
+        </section>
+
+        <section class="profile-update-section" aria-labelledby="contact-heading">
+            <h2 id="contact-heading">{% trans "Contact and social links" %}</h2>
+            {% for field in form %}
+                {% if field.name == "email" or field.name == "telegram" or field.name == "facebook" or field.name == "instagram" or field.name == "linkedin" or field.name == "imo" or field.name == "tiktok" %}
+                    <div class="form-row">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}{{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </section>
+
+        <div class="profile-update-actions">
+            <button type="submit" class="save-btn">{% trans "Finish setup" %}</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ organization.name }} | {% trans "Sheger Market" %}{% endblock %}
+
+{% block content %}
+<main class="container">
+    <h1>{{ organization.name }}</h1>
+    {% if is_farm %}
+        <p>{% trans "Company" %}: <a href="{% url 'companies:company_detail' organization.company_id %}">{{ organization.company.name }}</a></p>
+        <p>{{ organization.city }}{% if organization.region %}, {{ organization.region }}{% endif %}</p>
+    {% else %}
+        <p>{{ organization.location }}</p>
+    {% endif %}
+    <p>{{ organization.description }}</p>
+    {% if organization.email %}<p>{{ organization.email }}</p>{% endif %}
+    {% if organization.phone %}<p>{{ organization.phone }}</p>{% endif %}
+    {% if organization.website %}<p><a href="{{ organization.website }}" rel="noopener noreferrer">{{ organization.website }}</a></p>{% endif %}
+    {% if request.user.is_staff or organization.owner_id == request.user.id %}
+        {% if is_farm %}
+            <a href="{% url 'companies:farm_update' organization.pk %}">{% trans "Edit farm" %}</a>
+            <form method="post" action="{% url 'companies:farm_delete' organization.pk %}">
+                {% csrf_token %}
+                <button type="submit">{% trans "Delete farm" %}</button>
+            </form>
+        {% else %}
+            <a href="{% url 'companies:company_update' organization.pk %}">{% trans "Edit company" %}</a>
+            <form method="post" action="{% url 'companies:company_delete' organization.pk %}">
+                {% csrf_token %}
+                <button type="submit">{% trans "Delete company" %}</button>
+            </form>
+        {% endif %}
+    {% endif %}
+    <a href="{% url 'companies:manage' %}">{% trans "Back to companies and farms" %}</a>
+</main>
+{% endblock %}

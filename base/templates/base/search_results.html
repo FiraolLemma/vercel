@@ -1,0 +1,95 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+{% if query %}
+    {% trans "Search Results for" %} "{{ query }}" - {% trans "Sheger.city" %}
+{% else %}
+    {% trans "Search Products" %} - {% trans "Sheger.city" %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="search-results-section">
+    <div class="container">
+        <div class="search-header">
+            <h1>{% trans "Search Results" %}</h1>
+            
+            {% if query %}
+                <p class="search-query">{% trans "Showing results for" %} <strong>"{{ query }}"</strong></p>
+            {% endif %}
+            
+            <div class="search-stats">
+                {% if results_count > 0 %}
+                    <p>{% trans "Found" %} {{ results_count }} {% trans "results" %}</p>
+                    {% if poultry_count or dairy_count or dairy_service_count %}
+                    <div class="category-breakdown">
+                        {% if poultry_count %}<span>🐔 {{ poultry_count }} {% trans "Poultry" %}</span>{% endif %}
+                        {% if dairy_count %}<span>🥛 {{ dairy_count }} {% trans "Dairy products" %}</span>{% endif %}
+                        {% if dairy_service_count %}<span>🧑‍🌾 {{ dairy_service_count }} {% trans "Farm services" %}</span>{% endif %}
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {% if no_query %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h2>{% trans "What are you looking for?" %}</h2>
+            <p>{% trans "Enter a search term to find products and farm services across the marketplace." %}</p>
+        </div>
+        {% elif results_count == 0 %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h2>{% trans "No results found" %}</h2>
+            <p>{% trans "Try different keywords or browse our categories" %}</p>
+            <div class="suggested-categories">
+                <a href="{% url 'clothings:clothing_list' %}" class="category-suggestion">
+                    <i class="fas fa-cow"></i>
+                    <span>{% trans "Dairy farm" %}</span>
+                </a>
+                <a href="{% url 'poultryitems:item_list' %}" class="category-suggestion">
+                    <i class="fas fa-feather-alt"></i>
+                    <span>{% trans "Poultry" %}</span>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="search-results-grid">
+            {% for result in results %}
+            <div class="search-result-card {{ result.type }}-card">
+                <a href="{{ result.url }}" class="result-link">
+                    <div class="result-image">
+                        {% if result.type == 'poultry' and result.object.main_image and result.object.main_image.name != "products/default.jpg" %}
+                            <img src="{{ result.object.main_image.url }}" alt="{{ result.title }}">
+                        {% elif result.type == 'dairy' and result.object.image %}
+                            <img src="{{ result.object.image.url }}" alt="{{ result.title }}">
+                        {% else %}
+                            <span class="result-image-placeholder" aria-hidden="true"><i class="{% if result.type == 'dairy_service' %}fas fa-handshake-angle{% elif result.type == 'dairy' %}fas fa-cow{% else %}fas fa-store{% endif %}"></i></span>
+                        {% endif %}
+                        <span class="result-type-badge">{% if result.type == 'dairy_service' %}{% trans "Farm service" %}{% elif result.type == 'dairy' %}{% trans "Dairy" %}{% else %}{{ result.type }}{% endif %}</span>
+                    </div>
+                    
+                    <div class="result-content">
+                        <h3 class="result-title">{{ result.title }}</h3>
+                        <p class="result-description">{{ result.description|truncatewords:20 }}</p>
+                        <div class="result-price">{% if result.type == 'dairy' %}{{ result.object.display_price }}{% elif result.type == 'dairy_service' %}ETB {{ result.price }}{% else %}${{ result.price }}{% endif %}</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'base/css/search_results.css' %}">
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "My companies and farms" %}{% endblock %}
+
+{% block content %}
+<main class="container">
+    <h1>{% trans "My companies and farms" %}</h1>
+    {% if can_manage_organizations %}
+        <p>
+            <a href="{% url 'companies:company_create' %}">{% trans "Add a company" %}</a>
+            <a href="{% url 'companies:farm_create' %}">{% trans "Add a farm" %}</a>
+        </p>
+    {% endif %}
+
+    <section aria-labelledby="companies-title">
+        <h2 id="companies-title">{% trans "Companies" %}</h2>
+        <ul>
+            {% for company in companies %}
+                <li><a href="{% url 'companies:company_detail' company.pk %}">{{ company.name }}</a></li>
+            {% empty %}
+                <li>{% trans "No companies have been added." %}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section aria-labelledby="farms-title">
+        <h2 id="farms-title">{% trans "Farms" %}</h2>
+        <ul>
+            {% for farm in farms %}
+                <li>
+                    <a href="{% url 'companies:farm_detail' farm.pk %}">{{ farm.name }}</a>
+                    {% if farm.company %}<span>({{ farm.company.name }})</span>{% endif %}
+                </li>
+            {% empty %}
+                <li>{% trans "No farms have been added." %}</li>
+            {% endfor %}
+        </ul>
+    </section>
+</main>
+{% endblock %}

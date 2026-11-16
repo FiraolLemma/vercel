@@ -1,0 +1,7 @@
+{% load i18n %}
+<nav class="quick-link-grid" aria-label="{% trans 'Farm and platform navigation' %}">
+  <a href="{% url 'admin_app:manage_dairys' %}">{% trans "Dairy farms and inventory" %}</a>
+  <a href="{% url 'admin_app:manage_poultry' %}">{% trans "Poultry farms and inventory" %}</a>
+  <a href="{% url 'admin_app:manage_sales' %}">{% trans "Poultry sales records" %}</a>
+  <a href="{% url 'admin_app:manage_users' %}">{% trans "Manage users" %}</a>
+</nav>

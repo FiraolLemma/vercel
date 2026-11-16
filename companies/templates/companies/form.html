@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ form_title }} | {% trans "Sheger Market" %}{% endblock %}
+
+{% block content %}
+<main class="container">
+    <h1>{{ form_title }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit">{% trans "Save" %}</button>
+        <a href="{% url 'companies:manage' %}">{% trans "Cancel" %}</a>
+    </form>
+</main>
+{% endblock %}

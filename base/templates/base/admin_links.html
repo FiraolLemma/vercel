@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Farm and admin links" %}{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'base/css/admin-links.css' %}">
+  <link rel="stylesheet" href="{% static 'admin_app/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+  <p class="eyebrow">{% trans "Farm management" %}</p>
+  <h1>{% trans "Admin links" %}</h1>
+  {% if request.user.is_staff or request.user.is_superuser %}
+    {% include "base/_admin_quick_links.html" %}
+    {% if request.user.is_superuser %}
+      <ul>
+        <li><a href="{% url 'base:message_list' %}">{% trans "View messages" %}</a></li>
+        <li><a href="{% url 'contact:received_messages' %}">{% trans "View contact messages" %}</a></li>
+      </ul>
+    {% endif %}
+  {% else %}
+    <p>{% trans "You do not have permission to access farm administration links." %}</p>
+  {% endif %}
+</main>
+{% endblock %}

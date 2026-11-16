@@ -48,14 +48,10 @@ Thumbs.db
 # Railway-specific
 .railwayignore
 
-# all files
-Procfile
-requirements.txt
-manage.py
-users
-base
-companies
-contact
+# Vercel
+.vercel/
+.env.local
+staticfile/
 media
 # Python
 __pycache__/
