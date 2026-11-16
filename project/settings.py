@@ -8,7 +8,6 @@ import dj_database_url
 from dotenv import load_dotenv
 
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import gettext_lazy as _
 
 
 # ==========================================================
@@ -120,15 +119,18 @@ X_FRAME_OPTIONS = 'DENY'
 # ==========================================================
 # INTERNATIONALIZATION
 # ==========================================================
+# ==========================================================
+# INTERNATIONALIZATION
+# ==========================================================
 
 LANGUAGES = [
-    ('en', _('English')),
-    ('am', _('Amharic')),
-    ('om', _('Oromiffa')),
+    ('en', 'English'),
+    ('am', 'Amharic'),
+    ('om', 'Oromiffa'),
 ]
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale')
+    BASE_DIR / 'locale',
 ]
 
 LANGUAGE_COOKIE_NAME = 'django_language'
@@ -140,7 +142,6 @@ TIME_ZONE = 'Africa/Addis_Ababa'
 
 USE_I18N = True
 USE_TZ = True
-
 
 # ==========================================================
 # INSTALLED APPLICATIONS
