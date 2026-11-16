@@ -14,9 +14,7 @@ load_dotenv(BASE_DIR / '.env')
 IS_VERCEL = os.getenv('VERCEL', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
-DEBUG = not IS_VERCEL and os.getenv('DEBUG', 'False').strip().lower() in {
-    '1', 'true', 'yes', 'on'
-}
+DEBUG = True
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
