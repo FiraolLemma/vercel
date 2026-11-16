@@ -24,7 +24,19 @@ Set Vercel's **Root Directory** to `project`. Vercel detects the Django
 application and collects static files automatically; no custom build or start
 command is needed. The ASGI function serves HTTP and Channels WebSockets.
 
-Set these variables for Production, Preview, and Development:
+Before deploying, add the required values under **Project Settings >
+Environment Variables** in Vercel and enable them for every environment you
+deploy (at least Production, and Preview if you use preview deployments).
+Vercel reads Django settings during its build, so these variables must be
+available to the build as well as the running function. A local `.env` file is
+not uploaded as Vercel configuration.
+
+In particular, the reported `DATABASE_URL is required on Vercel` error means
+`DATABASE_URL` is missing from the selected Vercel environment. Add the
+connection URL for your persistent PostgreSQL database, then redeploy. Do not
+replace it with SQLite: Vercel's function filesystem is ephemeral.
+
+Set these variables:
 
 | Variable | Purpose |
 | --- | --- |
