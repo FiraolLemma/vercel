@@ -1,55 +1,57 @@
-# Deploying to Vercel
-
-Vercel runs this Django project as an ASGI function. The project is in the
-`project/` directory, so set Vercel's **Root Directory** to `project` when
-importing the repository. No custom build or start command is needed; Vercel
-detects `manage.py` and collects static files during the build.
-
-## Required environment variables
-
-Set these for every Vercel environment you deploy (Production, Preview, and
-Development):
-
-| Variable | Value |
-| --- | --- |
-| `SECRET_KEY` | A new, long, random Django secret. |
-| `DEBUG` | `false` |
-| `DATABASE_URL` | A persistent PostgreSQL connection URL. SQLite is only used locally; Vercel's filesystem is not persistent. |
-| `REDIS_URL` | A Redis connection URL for Django Channels (use `rediss://` when required by your provider). |
-| `CLOUDINARY_CLOUD_NAME` | Your Cloudinary cloud name. |
-| `CLOUDINARY_API_KEY` | Your Cloudinary API key. |
-| `CLOUDINARY_API_SECRET` | Your Cloudinary API secret. |
-
-`VERCEL_URL` is supplied by Vercel and is added to Django's allowed hosts and
-CSRF trusted origins automatically. If you use a custom domain, add it to
-`ALLOWED_HOSTS` (hostname only) and `CSRF_TRUSTED_ORIGINS` (full `https://`
-origin), separated by commas.
-
-The Cloudinary variables enable durable media uploads. Without them, uploads
-would be lost when a serverless function instance is recycled. Redis backs
-Channels; configure a managed Redis service to keep chat and other channel
-features working across function instances.
-
-## Database setup
-
-Create the PostgreSQL database before deploying and set `DATABASE_URL` in
-Vercel. Apply migrations against that database before serving traffic. For
-example, pull the environment variables locally with the Vercel CLI, then run:
-
-```shell
-python manage.py migrate
-```
-
-Keep the pulled environment file local; never commit secrets.
+# Local and Vercel deployment
 
 ## Local development
 
-The local SQLite fallback is unchanged. For Vercel CLI development, pull
-environment variables into `.env.local` and run:
+From the `project/` directory, copy the example environment file and install
+the Python dependencies:
 
-```shell
-vercel dev
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-The `worker` process in `Procfile` is not started by Vercel. If you rely on
-background workers, run them as a separate persistent service.
+Replace the example `SECRET_KEY` before using the app beyond local development.
+Local development uses SQLite and stores uploads in `media/`. Redis is only
+needed for Channels features such as chat.
+
+## Vercel deployment
+
+Set Vercel's **Root Directory** to `project`. Vercel detects the Django
+application and collects static files automatically; no custom build or start
+command is needed. The ASGI function serves HTTP and Channels WebSockets.
+
+Set these variables for Production, Preview, and Development:
+
+| Variable | Purpose |
+| --- | --- |
+| `SECRET_KEY` | A new, long, random Django secret. |
+| `DEBUG` | Set to `false` (Django also forces it off on Vercel). |
+| `DATABASE_URL` | Persistent PostgreSQL connection URL. |
+| `REDIS_URL` | Managed Redis URL for Django Channels (`rediss://` if required). |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name for persistent uploads. |
+| `CLOUDINARY_API_KEY` | Cloudinary API key. |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret. |
+
+Vercel supplies `VERCEL_URL`; Django adds it to allowed hosts and CSRF trusted
+origins. For a custom domain, set `ALLOWED_HOSTS` to its hostname and
+`CSRF_TRUSTED_ORIGINS` to its full `https://` origin. Separate multiple values
+with commas.
+
+The database, Redis, and Cloudinary credentials are required on Vercel because
+its function filesystem is ephemeral. Apply database migrations before serving
+traffic. For example, pull Vercel environment variables locally, then run:
+
+```powershell
+python manage.py migrate
+```
+
+Keep `.env` and `.env.local` private; neither should be committed. To run with
+Vercel's local emulator, pull environment variables into `.env.local`, then
+run `vercel dev`.
+
+The `worker` process in `Procfile` is not started by Vercel. Run background
+workers as a separate persistent service if your deployment needs them.

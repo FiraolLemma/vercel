@@ -41,6 +41,7 @@ Thumbs.db
 # Environment and config
 .env
 .env.*
+!.env.example
 *.env
 .secret
 .hintrc
@@ -52,68 +53,13 @@ Thumbs.db
 .vercel/
 .env.local
 staticfile/
-media
-# Python
-__pycache__/
-*.py[cod]
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-
-# Virtual environments
-venv/
-env/
-.venv/
-
-# Django
-*.log
-*.pot
-*.pyc
-local_settings.py
+media/
 db.sqlite3
 
-# Dockerfile
-Dockerfile
-docker-compose.yml
-docker-compose.override.yml
-docker-compose.override.*.yml
-
-
-# Static and compiled files
-
-# Node.js
-node_modules/
-*.tsbuildinfo
-
-# VS Code
-.vscode/
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Environment and config
-.env
-.env.*
-*.env
-.secret
-.hintrc
-
-# Railway-specific
-.railwayignore
-
-# Git
+# Editor and temporary files
 *.swp
 *.swo
 *.bak
 *~
-
-# Backup and metadata
 *.orig
 *.tmp
-
-# Notes and docs
-notes.md
-README.md

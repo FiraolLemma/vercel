@@ -11,8 +11,10 @@ load_dotenv(BASE_DIR / '.env.local')
 load_dotenv(BASE_DIR / '.env')
 
 # Environment configuration
-DEBUG = True
 IS_VERCEL = os.getenv('VERCEL', '').strip().lower() in {
+    '1', 'true', 'yes', 'on'
+}
+DEBUG = not IS_VERCEL and os.getenv('DEBUG', 'False').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
 
@@ -181,7 +183,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
-STATICFILES_DIRS = [ BASE_DIR / "static",]  
 cloudinary_credentials = (
     os.getenv('CLOUDINARY_CLOUD_NAME'),
     os.getenv('CLOUDINARY_API_KEY'),
