@@ -7,43 +7,58 @@
 {% block title %}{% trans "Sheger Market | Ethiopian Sheger Marketplace" %}{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'base/css/index.css' %}?v=9">
+<link rel="stylesheet" href="{% static 'base/css/index.css' %}?v=12">
 {% endblock %}
 
 {% block content %}
 <section class="hero-slider" aria-label="{% trans 'Marketplace highlights' %}">
     <div class="slider-container" aria-roledescription="carousel">
-        <article class="slide active" aria-hidden="false" style="background-image: linear-gradient(90deg, rgba(10, 31, 25, .78), rgba(10, 31, 25, .18)), url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=1800&q=85');">
+        
+        <article class="slide" aria-hidden="true" style="background-image: linear-gradient(90deg, rgba(10, 31, 25, .78), rgba(10, 31, 25, .18)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85');">
             <div class="container">
                 <div class="slide-content">
-                    <span class="hero-eyebrow">{% trans "Fresh from local farms" %}</span>
-                    <h1>{% trans "Ethiopia's dairy" %} <span class="hero-highlight">{% trans "marketplace" %}</span></h1>
-                    <p>{% trans "Find fresh milk, dairy products, farm supplies and trusted services near you." %}</p>
-                    <a href="{% url 'dairys:dairy_list' %}" class="btn-primary">{% trans "Explore dairy" %}<i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    <span class="hero-eyebrow">{% trans "Dairy and Poultry businesses on one place" %}</span>
+                    <h2>{% trans "Buy, sell and grow with Sheger" %}</h2>
+                    <p>{% trans "Connect with Ethiopian farmers, suppliers and service providers." %}</p>
                 </div>
             </div>
         </article>
+        
         <article class="slide" aria-hidden="true" style="background-image: linear-gradient(90deg, rgba(10, 31, 25, .78), rgba(10, 31, 25, .18)), url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1800&q=85');">
             <div class="container">
                 <div class="slide-content">
                     <span class="hero-eyebrow">{% trans "For poultry farmers" %}</span>
-                    <h2>{% trans "Everything your poultry farm needs" %}</h2>
+                    <h2>{% trans "Everything your" %} <span class="hero-highlight">{% trans "poultry farm" %}</span>{% trans "needs" %}</h2>
                     <p>{% trans "Buy and sell eggs, birds, equipment and more from local businesses." %}</p>
-                    <a href="{% url 'poultrys:index' %}" class="btn-primary">{% trans "Browse poultry" %}<i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-                </div>
-            </div>
-        </article>
-        <article class="slide" aria-hidden="true" style="background-image: linear-gradient(90deg, rgba(10, 31, 25, .78), rgba(10, 31, 25, .18)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85');">
-            <div class="container">
-                <div class="slide-content">
-                    <span class="hero-eyebrow">{% trans "Local businesses, one place" %}</span>
-                    <h2>{% trans "Buy, sell and grow with Sheger" %}</h2>
-                    <p>{% trans "Connect with Ethiopian farmers, suppliers and service providers." %}</p>
-                    <a href="{% url 'users:register' %}" class="btn-primary">{% trans "Join the marketplace" %}<i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                 </div>
             </div>
         </article>
 
+        <article class="slide active" aria-hidden="false" style="background-image: linear-gradient(90deg, rgba(10, 31, 25, .78), rgba(10, 31, 25, .18)), url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=1800&q=85');">
+            <div class="container">
+                <div class="slide-content">
+                    <span class="hero-eyebrow">{% trans "For dairy farmers" %}</span>
+                    <h1>{% trans "Everything your" %} <span class="hero-highlight">{% trans "dairy farm" %}</span>{% trans "needs" %}</h1>
+                    <p>{% trans "Find fresh milk, dairy products, farm supplies and trusted services near you." %}</p>
+                    <div class="hero-actions" role="group" aria-label="{% trans 'Explore the marketplace' %}">
+                        <a href="{% url 'poultrys:index' %}" class="hero-action hero-action--poultry">
+                            <i class="fas fa-feather-pointed hero-action__icon" aria-hidden="true"></i>
+                            {% trans "View Poultry" %}
+                            <i class="fas fa-arrow-right hero-action__arrow hero-action__arrow--right" aria-hidden="true"></i>
+                        </a>
+                        <a href="#feature-strip" class="hero-action hero-action--explore">
+                            {% trans "Explore More" %}
+                            <i class="fas fa-arrow-down hero-action__arrow hero-action__arrow--down" aria-hidden="true"></i>
+                        </a>
+                        <a href="{% url 'dairys:index' %}" class="hero-action hero-action--dairy">
+                            <i class="fas fa-cow hero-action__icon" aria-hidden="true"></i>
+                            {% trans "View Dairy" %}
+                            <i class="fas fa-arrow-right hero-action__arrow hero-action__arrow--right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
         <div class="slider-controls">
             <button type="button" class="prev-slide" aria-label="{% trans 'Previous highlight' %}"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
             <button type="button" class="next-slide" aria-label="{% trans 'Next highlight' %}"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
@@ -56,7 +71,7 @@
     </div>
 </section>
 
-<section class="feature-strip" aria-label="Farm platform benefits">
+<section class="feature-strip" id="feature-strip" aria-label="Farm platform benefits">
     <div class="container">
         <div class="feature-strip-inner">
             <article class="feature-item">
@@ -108,22 +123,64 @@
             <p>{% trans "Explore trusted listings from businesses and farmers across Ethiopia." %}</p>
         </div>
         <div class="category-container">
-            <a href="{% url 'dairys:dairy_list' %}" class="category-card category-dairy">
-                <span class="category-icon"><i class="fas fa-cow" aria-hidden="true"></i></span>
-                <div class="category-copy">
-                    <h3 class="category-name">{% trans "Dairy farm" %}</h3>
-                    <small>{{ dairy_count }} {% trans "listings" %}</small>
-                </div>
-                <i class="fas fa-arrow-right category-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{% url 'poultrys:index' %}" class="category-card category-poultry">
-                <span class="category-icon"><i class="fas fa-feather-pointed" aria-hidden="true"></i></span>
-                <div class="category-copy">
+            <details class="category-card category-dairy" open>
+                <summary class="category-card__summary">
+                    <span class="category-icon"><i class="fas fa-cow" aria-hidden="true"></i></span>
+                    <h3 class="category-name">{% trans "Dairy" %}</h3>
+                    <span class="category-description">{% trans "Products, services and support for dairy farmers" %}</span>
+                    <span class="category-total">{{ dairy_count }} {% trans "listings and services" %}</span>
+                    <span class="category-arrow" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <ul class="category-list">
+                    <li>
+                        <a class="category-list-link" href="{% url 'dairys:marketplace' %}">
+                            <span class="category-list-label"><i class="fas fa-bottle-water" aria-hidden="true"></i>{% trans "Dairy products" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ dairy_product_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="category-list-link" href="{% url 'dairys:marketplace' %}">
+                            <span class="category-list-label"><i class="fas fa-handshake-angle" aria-hidden="true"></i>{% trans "Dairy farm services" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ dairy_service_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </details>
+            <details class="category-card category-poultry" open>
+                <summary class="category-card__summary">
+                    <span class="category-icon"><i class="fas fa-feather-pointed" aria-hidden="true"></i></span>
                     <h3 class="category-name">{% trans "Poultry" %}</h3>
-                    <small>{{ poultry_count }} {% trans "listings" %}</small>
-                </div>
-                <i class="fas fa-arrow-right category-arrow" aria-hidden="true"></i>
-            </a>
+                    <span class="category-description">{% trans "Poultry products, sellers and services" %}</span>
+                    <span class="category-total">{{ poultry_count }} {% trans "listings and services" %}</span>
+                    <span class="category-arrow" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+                </summary>
+                <ul class="category-list">
+                    <li>
+                        <a class="category-list-link" href="{% url 'poultrys:item_list' %}">
+                            <span class="category-list-label"><i class="fas fa-egg" aria-hidden="true"></i>{% trans "Poultry items for sale" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ poultry_item_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="category-list-link" href="{% url 'poultrys:egg_sellers' %}">
+                            <span class="category-list-label"><i class="fas fa-egg" aria-hidden="true"></i>{% trans "Egg sellers" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ egg_seller_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="category-list-link" href="{% url 'poultrys:chicken_sellers_list' %}">
+                            <span class="category-list-label"><i class="fas fa-house" aria-hidden="true"></i>{% trans "Chicken farms" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ chicken_seller_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="category-list-link" href="{% url 'poultrys:veterinary_consultancy' %}">
+                            <span class="category-list-label"><i class="fas fa-user-doctor" aria-hidden="true"></i>{% trans "Veterinary consultants" %}</span>
+                            <span class="category-list-count"><span class="category-count-badge">{{ consultant_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </details>
         </div>
     </div>
 </section>
@@ -181,12 +238,11 @@
     <div class="container seller-cta-content">
         <div>
             <span class="section-kicker">{% trans "Grow your business" %}</span>
-            <h2>{% trans "Have a dairy product or farm service to offer?" %}</h2>
-            <p>{% trans "Create a listing and connect with customers looking for trusted local suppliers." %}</p>
+            <h2>{% trans "Would you like to work with us ?" %}</h2>
+            <p>{% trans "Contact us to learn more about how we can help you grow your dairy or poultry business. Use the form below to get in touch." %}</p>
         </div>
         <div class="seller-cta-actions">
-            <a class="btn-primary" href="{% url 'dairys:dairy_create' %}">{% trans "List a product" %}</a>
-            <a class="btn-secondary" href="{% url 'dairys:dairy_service_create' %}">{% trans "Offer a service" %}</a>
+            <a class="btn-primary" href="#home-contact">{% trans "Chat with us" %}</a>
         </div>
     </div>
 </section>
@@ -195,7 +251,7 @@
     <div class="container home-contact-layout">
         <div class="home-contact-copy">
             <span class="section-kicker">{% trans "We're here to help" %}</span>
-            <h2 id="home-contact-title">{% trans "Questions about the marketplace?" %}</h2>
+            <h2 id="home-contact-title">{% trans "Questions about the marketplace? / Would you like to work with us?" %}</h2>
             <p>{% trans "Send our team a message and we'll get back to you." %}</p>
         </div>
 
@@ -218,5 +274,5 @@
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'base/js/index.js' %}?v=3" defer></script>
+<script src="{% static 'base/js/index.js' %}?v=4" defer></script>
 {% endblock %}

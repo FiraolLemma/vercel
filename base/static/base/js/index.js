@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 slide.classList.toggle('active', isActive);
                 slide.setAttribute('aria-hidden', String(!isActive));
             });
+            const heroActions = carousel.querySelector('.hero-actions');
+            const activeContent = slides[activeIndex]?.querySelector('.slide-content');
+            if (heroActions && activeContent && heroActions.parentElement !== activeContent) {
+                activeContent.append(heroActions);
+            }
             dots.forEach((dot, dotIndex) => {
                 const isActive = dotIndex === activeIndex;
                 dot.classList.toggle('active', isActive);

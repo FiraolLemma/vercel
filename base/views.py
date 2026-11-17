@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages as django_messages
 
-from poultrys.models import Item
+from poultrys.models import ChickenSeller, Consultant, EggSeller, Item
 
 from conversation.models import Conversation 
 from .forms import MessageForm
@@ -17,8 +17,16 @@ def base(request):
     User = get_user_model()
     users_count = User.objects.count()
     active_users_count = User.objects.filter(is_active=True).count()
-    items_count = Item.objects.count() 
+    poultry_item_count = Item.objects.count()
+    items_count = poultry_item_count
     conversations_count = Conversation.objects.count()
+    dairy_product_count = DairyProduct.objects.filter(
+        quantity_available__gt=0
+    ).count()
+    dairy_service_count = DairyService.objects.filter(is_available=True).count()
+    egg_seller_count = EggSeller.objects.filter(is_active=True).count()
+    chicken_seller_count = ChickenSeller.objects.filter(is_active=True).count()
+    consultant_count = Consultant.objects.filter(is_available=True).count()
     featured_poultry = Item.objects.filter(is_featured=True)\
         .select_related('category')\
         .prefetch_related('sub_images')\
@@ -70,8 +78,19 @@ def base(request):
         'conversations_count': conversations_count,
         'form': form,
         'all_featured': all_featured,
-        'poultry_count': Item.objects.count(),
-        'dairy_count': DairyProduct.objects.count(),
+        'dairy_product_count': dairy_product_count,
+        'dairy_service_count': dairy_service_count,
+        'dairy_count': dairy_product_count + dairy_service_count,
+        'poultry_item_count': poultry_item_count,
+        'egg_seller_count': egg_seller_count,
+        'chicken_seller_count': chicken_seller_count,
+        'consultant_count': consultant_count,
+        'poultry_count': (
+            poultry_item_count
+            + egg_seller_count
+            + chicken_seller_count
+            + consultant_count
+        ),
     }
 
     return render(request, 'base/index.html', context)

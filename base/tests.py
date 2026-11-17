@@ -2,6 +2,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from dairys.models import DairyCategory, DairyProduct, DairyService
+from poultrys.models import Item
+
 
 class AdminHeaderTests(TestCase):
     def test_superuser_sees_admin_workspace_shortcut(self):
@@ -38,7 +41,57 @@ class HomeCategorySectionTests(TestCase):
         response = self.client.get(reverse("base:index"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<h3 class="category-name">Dairy farm</h3>', html=True)
+        self.assertContains(response, 'class="category-card category-dairy" open')
+        self.assertContains(response, 'class="category-card category-poultry" open')
+        self.assertContains(response, '<h3 class="category-name">Dairy</h3>', html=True)
         self.assertContains(response, '<h3 class="category-name">Poultry</h3>', html=True)
+        self.assertContains(response, "Dairy products")
+        self.assertContains(response, "Dairy farm services")
+        self.assertContains(response, "Poultry items for sale")
         self.assertContains(response, reverse("dairys:dairy_list"))
-        self.assertContains(response, reverse("poultrys:index"))
+        self.assertContains(response, reverse("poultrys:item_list"))
+
+    def test_category_dropdown_counts_available_listings_and_services(self):
+        user = get_user_model().objects.create_user(
+            username="category-seller",
+            phone_number="+251911111124",
+        )
+        dairy_category = DairyCategory.objects.create(
+            name="Fresh dairy",
+            slug="fresh-dairy",
+        )
+        DairyProduct.objects.create(
+            category=dairy_category,
+            created_by=user,
+            name="Fresh milk",
+            slug="fresh-milk",
+            description="Fresh milk",
+            price="25.00",
+            location="Gelan",
+        )
+        DairyService.objects.create(
+            provider=user,
+            name="Farm advice",
+            slug="farm-advice",
+            service_type=DairyService.ServiceType.FARM_CONSULTING,
+            description="Dairy farm advice",
+            location="Gelan",
+        )
+        Item.objects.create(
+            created_by=user,
+            name="Chicken feed",
+            slug="chicken-feed",
+            description="Poultry feed",
+            price="100.00",
+        )
+
+        response = self.client.get(reverse("base:index"))
+
+        self.assertEqual(response.context["dairy_product_count"], 1)
+        self.assertEqual(response.context["dairy_service_count"], 1)
+        self.assertEqual(response.context["dairy_count"], 2)
+        self.assertEqual(response.context["poultry_item_count"], 1)
+        self.assertEqual(response.context["poultry_count"], 1)
+        self.assertContains(response, reverse("poultrys:egg_sellers"))
+        self.assertContains(response, reverse("poultrys:chicken_sellers_list"))
+        self.assertContains(response, reverse("poultrys:veterinary_consultancy"))
