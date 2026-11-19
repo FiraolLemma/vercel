@@ -3086,7 +3086,7 @@ button,
     .top-bar {
         padding: 0.3rem 0;
         font-size: 0.7rem;
-    }
+    } 
 
     .top-bar > .container,
     .header > .container {
@@ -3096,6 +3096,7 @@ button,
     }
 
     .top-bar-content {
+        display: flex;
         flex-direction: row;
         min-height: 0;
         flex-wrap: nowrap;
@@ -3748,6 +3749,257 @@ button,
     }
 }
 
+/* Keep the same header layout for guests, customers, staff, and administrators. */
+.header .header-content {
+    display: flex;
+    min-height: 76px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    padding: 0.75rem 0;
+}
+
+.header .logo {
+    flex: 0 0 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.header .logo a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.header .header-actions {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    margin-left: auto;
+}
+
+.header .search-bar {
+    position: relative;
+    flex: 1 1 320px;
+    width: auto;
+    min-width: 160px;
+    max-width: 520px;
+    margin: 0;
+}
+
+.header .account-dropdown,
+.header .admin-dashboard-link,
+.header .nav-toggle {
+    flex: 0 0 auto;
+}
+
+.header .account-dropdown__user-toggle {
+    max-width: 220px;
+}
+
+.header .account-dropdown__user-toggle .username {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header .user-btn,
+.header .login-btn {
+    min-height: 44px;
+    margin: 0;
+}
+
+.header .user-btn .base_current-avatar,
+.header .account-dropdown__user-toggle > i {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header .nav-toggle {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.top-bar-user-card {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.85rem;
+}
+
+.top-bar-user-detail strong {
+    display: inline-block;
+    max-width: min(38vw, 22rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+}
+
+@media (max-width: 768px) {
+    .header .header-content {
+        min-height: 60px;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .header .header-actions {
+        flex: 0 0 auto;
+        gap: 0.4rem;
+    }
+
+    .header .search-bar {
+        flex: 0 0 36px;
+        width: 36px;
+        min-width: 36px;
+        max-width: 36px;
+    }
+
+    .header .search-bar form {
+        width: 36px;
+        min-height: 36px;
+        height: 36px;
+        overflow: hidden;
+        border: 0;
+        border-radius: 50%;
+        background: #0a9d65;
+    }
+
+    .header .search-bar input {
+        width: 0;
+        min-height: 0;
+        padding: 0;
+        opacity: 0;
+    }
+
+    .header .search-bar button {
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        padding: 0;
+        border-radius: 50%;
+        background: #0a9d65;
+    }
+
+    .header .search-bar.search-open form {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        z-index: 1001;
+        width: min(280px, calc(100vw - 1.5rem));
+        max-width: calc(100vw - 1.5rem);
+        border: 1px solid #dce8df;
+        border-radius: 999px;
+        background: #f6faf7;
+    }
+
+    .header .search-bar.search-open input {
+        width: 100%;
+        min-height: 36px;
+        padding: 0.4rem 0.75rem;
+        opacity: 1;
+    }
+
+    .header .search-bar.search-open button {
+        border-radius: 0 999px 999px 0;
+        background: #087c4e;
+    }
+
+    .header .user-btn,
+    .header .login-btn,
+    .header .admin-dashboard-link,
+    .header .nav-toggle {
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        height: 40px;
+        justify-content: center;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .header .account-dropdown--user {
+        width: 40px;
+        min-width: 40px;
+        flex: 0 0 40px;
+    }
+
+    .header .account-dropdown__user-toggle {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .header .account-dropdown__user-toggle .username,
+    .header .account-dropdown__user-toggle .account-dropdown__chevron,
+    .header .login-btn .account-dropdown__chevron {
+        display: none;
+    }
+
+    .header .login-btn > span,
+    .header .admin-dashboard-link span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .header .user-btn .base_current-avatar,
+    .header .account-dropdown__user-toggle > i {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .header .nav-toggle {
+        flex: 0 0 40px;
+    }
+
+    .top-bar-content {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.35rem 0.75rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .header .header-content {
+        gap: 0.3rem;
+    }
+
+    .header .header-actions {
+        gap: 0.25rem;
+    }
+
+    .header .logo-text {
+        font-size: 1.1rem;
+    }
+
+    .header .logo-icon {
+        font-size: 1.3rem;
+    }
+}
+
 @media (max-width: 575px) {
     .header-admin .admin-dashboard-link {
         width: 40px;
@@ -4124,5 +4376,359 @@ button,
     .mega-menu-column {
         flex: 1 0 50%;
         margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 384px) {
+    .top-bar-content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.25rem;
+    }
+
+    .top-bar-user-card {
+        display: flex;
+        flex: 0 1 auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 0.3rem;
+        min-width: 0;
+        padding: 0.15rem 0.3rem;
+        font-size: 0.58rem;
+    }
+
+    .top-bar-user-detail {
+        gap: 0.15rem;
+        white-space: nowrap;
+    }
+
+    .top-links {
+        display: flex;
+        flex: 0 0 auto;
+        width: auto;
+        justify-content: flex-end;
+        gap: 0;
+    }
+
+    .top-bar-time {
+        display: none;
+    }
+
+    .top-links .top-bar-link {
+        display: inline-flex;
+        min-height: 22px;
+        gap: 0.25rem;
+        padding: 0.1rem 0.25rem;
+        font-size: 0.62rem;
+        white-space: nowrap;
+    }
+
+    .top-links .top-bar-link + .top-bar-link {
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header .header-content,
+    .header.header-admin .header-content {
+        display: flex;
+        min-height: 54px;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.35rem;
+        padding: 0.3rem 0;
+    }
+
+    .header .logo {
+        order: 0;
+        flex: 0 1 auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .header .header-actions,
+    .header.header-admin .header-actions {
+        order: 1;
+        display: flex;
+        flex: 0 0 auto;
+        width: auto;
+        max-width: calc(100% - 100px);
+        min-width: 0;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 0.3rem;
+        margin-left: auto;
+    }
+
+    .header .search-bar,
+    .header.header-admin .search-bar {
+        order: 0;
+        flex: 0 0 34px;
+        width: 34px;
+        min-width: 34px;
+        max-width: 34px;
+        margin: 0;
+    }
+
+    .header .search-bar.search-open {
+        z-index: 3;
+    }
+
+    .header .search-bar.search-open form {
+        position: absolute;
+        top: calc(100% + 0.45rem);
+        right: 0;
+        z-index: 2;
+        width: min(280px, calc(100vw - 1.5rem));
+        max-width: calc(100vw - 1.5rem);
+        border: 1px solid #dce8df;
+        border-radius: 999px;
+        background: #f6faf7;
+    }
+
+    .header .search-bar.search-open input {
+        width: 100%;
+        min-height: 34px;
+        padding: 0.4rem 0.75rem;
+        opacity: 1;
+    }
+
+    .header .search-bar.search-open button {
+        border-radius: 0 999px 999px 0;
+        background: #087c4e;
+    }
+
+    .header-admin .header-actions {
+        gap: 0.3rem;
+    }
+
+    .header-admin .admin-dashboard-link {
+        display: inline-flex;
+        width: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .header-admin .admin-dashboard-link span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+}
+
+.header:not(.header-admin) {
+    border-bottom: 3px solid transparent;
+}
+
+.header .admin-dashboard-link {
+    min-height: 44px;
+}
+
+.header .search-bar {
+    order: 0;
+}
+
+@media (max-width: 768px) {
+    .header:not(.header-admin) .header-content,
+    .header.header-admin .header-content {
+        display: flex;
+        min-height: 60px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .header:not(.header-admin) .header-actions,
+    .header.header-admin .header-actions {
+        display: flex;
+        flex: 0 0 auto;
+        width: auto;
+        max-width: 100%;
+        min-width: 0;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 0.4rem;
+        margin-left: auto;
+    }
+
+    .header:not(.header-admin) .search-bar,
+    .header.header-admin .search-bar {
+        position: relative;
+        order: 0;
+        flex: 0 0 36px;
+        width: 36px;
+        min-width: 36px;
+        max-width: 36px;
+        margin: 0;
+    }
+
+    .header:not(.header-admin) .search-bar form,
+    .header.header-admin .search-bar form {
+        width: 36px;
+        min-height: 36px;
+        height: 36px;
+        overflow: hidden;
+        border: 0;
+        border-radius: 50%;
+        background: #0a9d65;
+    }
+
+    .header:not(.header-admin) .search-bar input,
+    .header.header-admin .search-bar input {
+        width: 0;
+        min-height: 0;
+        padding: 0;
+        opacity: 0;
+    }
+
+    .header:not(.header-admin) .search-bar button,
+    .header.header-admin .search-bar button {
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        padding: 0;
+        border-radius: 50%;
+        background: #0a9d65;
+    }
+
+    .header:not(.header-admin) .search-bar.search-open form,
+    .header.header-admin .search-bar.search-open form {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        z-index: 1001;
+        width: min(280px, calc(100vw - 1.5rem));
+        max-width: calc(100vw - 1.5rem);
+        border: 1px solid #dce8df;
+        border-radius: 999px;
+        background: #f6faf7;
+    }
+
+    .header:not(.header-admin) .search-bar.search-open input,
+    .header.header-admin .search-bar.search-open input {
+        width: 100%;
+        min-height: 36px;
+        padding: 0.4rem 0.75rem;
+        opacity: 1;
+    }
+
+    .header:not(.header-admin) .search-bar.search-open button,
+    .header.header-admin .search-bar.search-open button {
+        border-radius: 0 999px 999px 0;
+        background: #087c4e;
+    }
+
+    .header:not(.header-admin) .account-dropdown--user,
+    .header.header-admin .account-dropdown--user {
+        flex: 0 0 40px;
+        width: 40px;
+        min-width: 40px;
+    }
+
+    .header:not(.header-admin) .user-btn,
+    .header:not(.header-admin) .login-btn,
+    .header:not(.header-admin) .admin-dashboard-link,
+    .header:not(.header-admin) .nav-toggle,
+    .header.header-admin .user-btn,
+    .header.header-admin .admin-dashboard-link,
+    .header.header-admin .nav-toggle {
+        display: inline-flex;
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 40px;
+        grid-column: auto;
+        grid-row: auto;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .header:not(.header-admin) .account-dropdown__user-toggle,
+    .header.header-admin .account-dropdown__user-toggle {
+        display: inline-flex;
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        grid-template-columns: none;
+        padding: 0;
+    }
+
+    .header:not(.header-admin) .user-btn .username,
+    .header.header-admin .user-btn .username,
+    .header:not(.header-admin) .account-dropdown__user-toggle .account-dropdown__chevron,
+    .header.header-admin .account-dropdown__user-toggle .account-dropdown__chevron,
+    .header:not(.header-admin) .login-btn .account-dropdown__chevron,
+    .header.header-admin .login-btn .account-dropdown__chevron {
+        display: none;
+    }
+
+    .header:not(.header-admin) .login-btn > span,
+    .header:not(.header-admin) .admin-dashboard-link span,
+    .header.header-admin .admin-dashboard-link span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .header:not(.header-admin) .user-btn .base_current-avatar,
+    .header:not(.header-admin) .account-dropdown__user-toggle > i,
+    .header.header-admin .user-btn .base_current-avatar,
+    .header.header-admin .account-dropdown__user-toggle > i {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}
+
+@media (max-width: 380px) {
+    .header:not(.header-admin) .header-content,
+    .header.header-admin .header-content {
+        gap: 0.3rem;
+    }
+
+    .header:not(.header-admin) .header-actions,
+    .header.header-admin .header-actions {
+        gap: 0.25rem;
+    }
+
+    .header:not(.header-admin) .logo-text,
+    .header.header-admin .logo-text {
+        font-size: 1.1rem;
+    }
+
+    .header:not(.header-admin) .logo-icon,
+    .header.header-admin .logo-icon {
+        font-size: 1.3rem;
     }
 }

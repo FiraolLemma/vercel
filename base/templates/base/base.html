@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="{{ current_language|default:'en' }}">
 
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% trans 'Ethiopian marketplace - Buy and sell products in Ethiopia' %}">
@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'base/css/base.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'base/css/base.css' %}?v=8">
     {% block css %}{% endblock %}
 </head>
 
@@ -538,7 +538,7 @@
 <script>
     window.UNREAD_COUNT_API_URL = {% if request.user.is_authenticated %}"{% url 'conversation:unread_count_api' %}"{% else %}null{% endif %};
 </script>
-<script src="{% static 'base/js/base.js' %}?v=5" defer></script>
+<script src="{% static 'base/js/base.js' %}?v=6" defer></script>
     {% block js %}{% endblock %}
 </body>
 </html>
