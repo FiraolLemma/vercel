@@ -4619,10 +4619,12 @@ button,
     .header.header-admin .search-bar.search-open form {
         position: absolute;
         top: calc(100% + 0.5rem);
-        right: 0;
+        left: 50%;
+        right: auto;
         z-index: 1001;
         width: min(280px, calc(100vw - 1.5rem));
         max-width: calc(100vw - 1.5rem);
+        transform: translateX(calc(-50% - 1rem));
         border: 1px solid #dce8df;
         border-radius: 999px;
         background: #f6faf7;
