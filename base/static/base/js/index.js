@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const previousButton = carousel.querySelector('.prev-slide');
         const nextButton = carousel.querySelector('.next-slide');
         let activeIndex = Math.max(0, slides.findIndex(slide => slide.classList.contains('active')));
+        if (window.matchMedia('(max-width: 384px)').matches) {
+            const poultrySlideIndex = slides.findIndex(slide =>
+                slide.querySelector('.hero-highlight')?.textContent.toLowerCase().includes('poultry')
+            );
+            if (poultrySlideIndex >= 0) activeIndex = poultrySlideIndex;
+        }
         let timerId;
 
         function showSlide(index) {
@@ -121,4 +127,108 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+
+    const categoryCards = Array.from(document.querySelectorAll('.category-section .category-card'));
+    const initiallyOpenCategories = categoryCards.map(card => card.open);
+    const smallScreen = window.matchMedia('(max-width: 384px)');
+
+    function updateCategoryCards() {
+        categoryCards.forEach((card, index) => {
+            card.open = smallScreen.matches ? false : initiallyOpenCategories[index];
+        });
+    }
+
+    if (categoryCards.length) {
+        updateCategoryCards();
+        if (smallScreen.addEventListener) {
+            smallScreen.addEventListener('change', updateCategoryCards);
+        } else {
+            smallScreen.addListener(updateCategoryCards);
+        }
+    }
+
+    const productGrid = document.getElementById('featured-products-grid');
+    if (productGrid) {
+        let productDots = null;
+        let productDotButtons = [];
+        let productScrollListenerAdded = false;
+
+        function getVisibleCards() {
+            return Array.from(productGrid.querySelectorAll('.product-card:not([hidden])'));
+        }
+
+        function setActiveProductDot(index) {
+            productDotButtons.forEach((button, buttonIndex) => {
+                if (buttonIndex === index) button.setAttribute('aria-current', 'true');
+                else button.removeAttribute('aria-current');
+            });
+        }
+
+        function updateProductDots() {
+            const cards = getVisibleCards();
+            if (!smallScreen.matches || cards.length < 2) {
+                productDots?.remove();
+                productDots = null;
+                productDotButtons = [];
+                return;
+            }
+
+            if (productDots && productDotButtons.length === cards.length) return;
+            productDots?.remove();
+
+            productDots = document.createElement('div');
+            productDots.className = 'mobile-product-dots';
+            productDots.setAttribute('role', 'group');
+            productDots.setAttribute('aria-label', 'Choose a featured listing');
+            productDotButtons = cards.map((card, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.setAttribute('aria-label', `Show listing ${index + 1}`);
+                button.addEventListener('click', () => {
+                    productGrid.scrollTo({
+                        left: card.offsetLeft - productGrid.offsetLeft,
+                        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                    });
+                    setActiveProductDot(index);
+                });
+                productDots.append(button);
+                return button;
+            });
+            productGrid.insertAdjacentElement('afterend', productDots);
+
+            if (!productScrollListenerAdded) {
+                productGrid.addEventListener('scroll', () => {
+                    const visibleCards = getVisibleCards();
+                    if (!visibleCards.length || !productDotButtons.length) return;
+
+                    const gridLeft = productGrid.getBoundingClientRect().left;
+                    const activeIndex = visibleCards.reduce((closestIndex, card, index) => {
+                        const closestCard = visibleCards[closestIndex];
+                        return Math.abs(card.getBoundingClientRect().left - gridLeft)
+                            < Math.abs(closestCard.getBoundingClientRect().left - gridLeft)
+                            ? index
+                            : closestIndex;
+                    }, 0);
+                    setActiveProductDot(activeIndex);
+                }, { passive: true });
+                productScrollListenerAdded = true;
+            }
+
+            setActiveProductDot(0);
+        }
+
+        updateProductDots();
+        if (smallScreen.addEventListener) {
+            smallScreen.addEventListener('change', updateProductDots);
+        } else {
+            smallScreen.addListener(updateProductDots);
+        }
+
+        new MutationObserver(updateProductDots).observe(productGrid, {
+            attributes: true,
+            attributeFilter: ['hidden'],
+            childList: true,
+            subtree: true,
+        });
+    }
 });

@@ -538,7 +538,7 @@
 <script>
     window.UNREAD_COUNT_API_URL = {% if request.user.is_authenticated %}"{% url 'conversation:unread_count_api' %}"{% else %}null{% endif %};
 </script>
-<script src="{% static 'base/js/base.js' %}?v=4" defer></script>
+<script src="{% static 'base/js/base.js' %}?v=5" defer></script>
     {% block js %}{% endblock %}
 </body>
 </html>

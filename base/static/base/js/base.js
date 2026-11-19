@@ -362,11 +362,43 @@ addPulseAnimation();
 function initSearch() {
     const searchField = document.getElementById('search-input');
     if (!searchField) return;
+    const searchForm = searchField.form;
+    const searchButton = searchForm?.querySelector('button[type="submit"]');
+    const mobileSearch = window.matchMedia('(max-width: 384px)');
 
     document.addEventListener('keydown', function(e) {
         if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) {
             e.preventDefault();
             searchField.focus();
+        }
+    });
+
+    if (!searchForm || !searchButton) return;
+
+    searchButton.addEventListener('click', function(event) {
+        if (!mobileSearch.matches || searchForm.classList.contains('search-open')) return;
+        event.preventDefault();
+        searchForm.classList.add('search-open');
+        searchField.focus();
+    });
+
+    searchForm.addEventListener('focusout', function(event) {
+        if (!searchForm.contains(event.relatedTarget)) {
+            searchForm.classList.remove('search-open');
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!searchForm.contains(event.target)) {
+            searchForm.classList.remove('search-open');
+            searchField.blur();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && searchForm.classList.contains('search-open')) {
+            searchForm.classList.remove('search-open');
+            searchField.blur();
         }
     });
 }
