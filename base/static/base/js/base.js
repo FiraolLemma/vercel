@@ -364,7 +364,13 @@ function initSearch() {
     if (!searchField) return;
     const searchForm = searchField.form;
     const searchButton = searchForm?.querySelector('button[type="submit"]');
-    const mobileSearch = window.matchMedia('(max-width: 384px)');
+    const searchBar = searchForm?.closest('.search-bar');
+    const mobileSearch = window.matchMedia('(max-width: 768px)');
+
+    function setSearchOpen(isOpen) {
+        searchForm?.classList.toggle('search-open', isOpen);
+        searchBar?.classList.toggle('search-open', isOpen);
+    }
 
     document.addEventListener('keydown', function(e) {
         if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) {
@@ -376,28 +382,28 @@ function initSearch() {
     if (!searchForm || !searchButton) return;
 
     searchButton.addEventListener('click', function(event) {
-        if (!mobileSearch.matches || searchForm.classList.contains('search-open')) return;
+        if (!mobileSearch.matches || searchBar?.classList.contains('search-open')) return;
         event.preventDefault();
-        searchForm.classList.add('search-open');
+        setSearchOpen(true);
         searchField.focus();
     });
 
     searchForm.addEventListener('focusout', function(event) {
         if (!searchForm.contains(event.relatedTarget)) {
-            searchForm.classList.remove('search-open');
+            setSearchOpen(false);
         }
     });
 
     document.addEventListener('click', function(event) {
         if (!searchForm.contains(event.target)) {
-            searchForm.classList.remove('search-open');
+            setSearchOpen(false);
             searchField.blur();
         }
     });
 
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && searchForm.classList.contains('search-open')) {
-            searchForm.classList.remove('search-open');
+        if (event.key === 'Escape' && searchBar?.classList.contains('search-open')) {
+            setSearchOpen(false);
             searchField.blur();
         }
     });
