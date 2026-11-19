@@ -4528,6 +4528,13 @@ button,
         white-space: nowrap;
         border: 0;
     }
+    .top-bar-phone {
+        display: none;
+    }
+    .top-bar-contactus {
+        display: none;
+    }
+
 }
 
 .header:not(.header-admin) {
