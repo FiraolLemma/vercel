@@ -95,3 +95,23 @@ class HomeCategorySectionTests(TestCase):
         self.assertContains(response, reverse("poultrys:egg_sellers"))
         self.assertContains(response, reverse("poultrys:chicken_sellers_list"))
         self.assertContains(response, reverse("poultrys:veterinary_consultancy"))
+
+
+class SearchResultsTests(TestCase):
+    def test_search_results_link_to_matching_poultry_items(self):
+        user = get_user_model().objects.create_user(
+            username="search-seller",
+            phone_number="+251911111125",
+        )
+        item = Item.objects.create(
+            created_by=user,
+            name="Chicken feed",
+            description="Nutritious poultry feed",
+            price="100.00",
+        )
+
+        response = self.client.get(reverse("base:search_results"), {"q": "Chicken"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, item.name)
+        self.assertContains(response, reverse("poultrys:item_detail", args=[item.pk]))
