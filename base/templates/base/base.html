@@ -28,7 +28,7 @@
             <div class="top-bar-content">
                 <div class="top-bar-user-card" aria-label="{% trans 'Account role and status' %}">
                     {% if request.user.is_authenticated %}
-                    <span class="top-bar-user-detail">
+                    <span class="top-bar-user-detail role-label">
                         <i class="fas fa-user-tag" aria-hidden="true"></i>
                         <span>{% trans "Role" %}:</span>
                         {% if request.user.role_labels %}
@@ -37,7 +37,7 @@
                             <strong>{% trans "Member" %}</strong>
                         {% endif %}
                     </span>
-                    <span class="top-bar-user-detail">
+                    <span class="top-bar-user-detail status-label">
                         <i class="fas fa-circle-check" aria-hidden="true"></i>
                         <span>{% trans "Status" %}:</span>
                         {% if request.user.is_active %}
@@ -47,12 +47,12 @@
                         {% endif %}
                     </span>
                     {% else %}
-                    <span class="top-bar-user-detail">
+                    <span class="top-bar-user-detail role-label">
                         <i class="fas fa-user-tag" aria-hidden="true"></i>
                         <span>{% trans "Role" %}:</span>
                         <strong>{% trans "Guest" %}</strong>
                     </span>
-                    <span class="top-bar-user-detail">
+                    <span class="top-bar-user-detail status-label">
                         <i class="fas fa-circle-info" aria-hidden="true"></i>
                         <span>{% trans "Status" %}:</span>
                         <strong>{% trans "Signed out" %}</strong>

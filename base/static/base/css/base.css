@@ -3578,6 +3578,9 @@ button,
         font-size: 0.7rem;
         line-height: 1.5;
     }
+    .status-label {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
