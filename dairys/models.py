@@ -1,245 +1,268 @@
-# project/Dairys/models.py
-from django.db import models
 from django.conf import settings
-from django.utils.text import slugify
+from django.core.validators import MinValueValidator
+from django.db import models
 from django.urls import reverse
-from django.contrib.contenttypes.fields import GenericRelation
-from cart.models import CartItem
-
-class DairyItemCategory(models.Model):
-    GENDER_CHOICES = [
-        ('M', 'Men'),
-        ('W', 'Women'),
-        ('K', 'Kids'),
-        ('U', 'Unisex'),
-    ]
-    
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    icon = models.CharField(max_length=30, blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.get_gender_display()} - {self.name}"
-
-class DairyItem(models.Model): 
-    category = models.ForeignKey(DairyItemCategory, on_delete=models.CASCADE, related_name='items')
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock_quantity = models.PositiveIntegerField(default=1)
-    is_featured = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    like_count = models.PositiveIntegerField(default=0)
-    share_count = models.PositiveIntegerField(default=0)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE,
-        related_name='clothes'
-    )
-    liked_by = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='liked_dairys',
-        blank=True
-    )
-
-    def increment_likes(self):
-        self.like_count += 1
-        self.save(update_fields=['like_count'])
-        return self.like_count
-
-    def toggle_like(self, user):
-        if user in self.liked_by.all():
-            self.liked_by.remove(user)
-        else:
-            self.liked_by.add(user)
-        self.like_count = self.liked_by.count()
-        self.save()
-        return self.like_count
-
-    def increment_shares(self):
-        self.share_count += 1
-        self.save(update_fields=['share_count'])
-        return self.share_count
-    
-    def has_liked(self, user):
-        """Return whether the user has liked this legacy item."""
-        if user.is_authenticated:
-            return self.liked_by.filter(pk=user.pk).exists()
-        return False
-
-    def __str__(self):
-        return f"{self.name} ({self.category})"
-
-    def get_absolute_url(self):
-        return reverse("dairys:dairy_detail", kwargs={"slug": self.slug})
-
-    @property
-    def current_price(self):
-        return self.discount_price if self.discount_price else self.price
-    
-    @property
-    def is_on_sale(self):
-        return self.discount_price is not None
-    cart_items = GenericRelation(CartItem, content_type_field='content_type', object_id_field='object_id')
-
-class DairyImage(models.Model):
-    dairys = models.ForeignKey(DairyItemCategory, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='dairy_images/')
-    is_main = models.BooleanField(default=False)
-    alt_text = models.CharField(max_length=100, blank=True)
-    
-    def __str__(self):
-        return f"Imafge for {self.dairys.name}"
+from django.utils.translation import gettext_lazy as _
 
 
 class DairyCategory(models.Model):
+    MAIN_CATEGORY_CHOICES = [
+        ("milk", _("Fresh Milk & Dairy Products")),
+        ("items", _("Dairy Farm Items")),
+        ("livestock", _("Dairy Cattle & Livestock")),
+        ("training", _("Dairy Farm Training")),
+        ("consulting", _("Dairy Farm Consulting")),
+    ]
+
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, max_length=120)
+    slug = models.SlugField(max_length=110, unique=True)
+    main_category = models.CharField(max_length=20, choices=MAIN_CATEGORY_CHOICES, default="items")
     description = models.TextField(blank=True)
     icon = models.CharField(max_length=50, blank=True)
 
     class Meta:
-        ordering = ("name",)
-        verbose_name_plural = "Dairy categories"
+        ordering = ["main_category", "name"]
+        verbose_name = _("Dairy category")
+        verbose_name_plural = _("Dairy categories")
 
     def __str__(self):
         return self.name
 
 
-class DairyProduct(models.Model):
-    class Unit(models.TextChoices):
-        LITER = "liter", "Liter"
-        KILOGRAM = "kg", "Kilogram"
-        PIECE = "piece", "Piece"
-        PACKAGE = "package", "Package"
+class TrainingEnrollment(models.Model):
+    TOPIC_CHOICES = [
+        ("clean_milk_hygiene", _("Clean milk production & hygiene")),
+        ("cattle_feeding", _("Cattle feeding & ration formulation")),
+        ("calf_rearing", _("Calf rearing")),
+        ("processing_workshop", _("Dairy processing workshops")),
+    ]
+    FORMAT_CHOICES = [
+        ("in_person", _("In-person")),
+        ("online", _("Online")),
+    ]
 
+    name = models.CharField(max_length=160)
+    email = models.EmailField()
+    phone = models.CharField(max_length=40)
+    topic = models.CharField(max_length=100, choices=TOPIC_CHOICES)
+    format = models.CharField(max_length=20, choices=FORMAT_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.get_topic_display()}"
+
+
+class DairyProduct(models.Model):
+    MAIN_CATEGORY_CHOICES = [
+        ("milk", _("Fresh Milk & Dairy Products")),
+        ("items", _("Dairy Farm Items")),
+        ("livestock", _("Dairy Cattle & Livestock")),
+    ]
+    ITEM_GROUP_CHOICES = [
+        ("milking", _("Milking & Handling")),
+        ("cooling", _("Cooling & Storage")),
+        ("processing", _("Processing")),
+        ("feeding", _("Feeding & Bedding")),
+        ("infrastructure", _("Infrastructure & Health")),
+    ]
+    MILK_SOURCE_CHOICES = [
+        ("cow", _("Cow")),
+        ("goat", _("Goat")),
+        ("camel", _("Camel")),
+    ]
+    MILK_UNIT_CHOICES = [
+        ("liters", _("Liters")),
+        ("kg", _("Kg")),
+        ("containers", _("Containers")),
+    ]
+    LIVESTOCK_TYPE_CHOICES = [
+        ("dairy_cow", _("Dairy cow")),
+        ("heifer", _("Heifer")),
+        ("calf", _("Calf")),
+        ("bull", _("Breeding bull / sire")),
+    ]
+
+    name = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180, unique=True)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+    main_category = models.CharField(
+        max_length=20,
+        choices=MAIN_CATEGORY_CHOICES,
+        default="items",
+        db_index=True,
+    )
+    subcategory = models.CharField(max_length=100, blank=True)
+    item_group = models.CharField(max_length=24, choices=ITEM_GROUP_CHOICES, blank=True)
+    main_image = models.ImageField(upload_to="dairys/products/", blank=True)
+    unit = models.CharField(max_length=30, blank=True)
+    quantity_available = models.PositiveIntegerField(default=1)
+    location = models.CharField(max_length=160, blank=True)
+    milk_source = models.CharField(max_length=20, choices=MILK_SOURCE_CHOICES, blank=True)
+    milk_unit = models.CharField(max_length=20, choices=MILK_UNIT_CHOICES, blank=True)
+    collection_date = models.DateField(blank=True, null=True)
+    livestock_type = models.CharField(max_length=20, choices=LIVESTOCK_TYPE_CHOICES, blank=True)
+    breed = models.CharField(max_length=100, blank=True)
+    age_months = models.PositiveIntegerField(blank=True, null=True)
+    lactation_status = models.CharField(max_length=100, blank=True)
+    daily_milk_yield = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        help_text=_("Average liters per day"),
+        blank=True,
+        null=True,
+    )
+    is_featured = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey(
         DairyCategory,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name="products",
-    )
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="dairy_products",
+        blank=True,
+        null=True,
     )
     company = models.ForeignKey(
         "companies.Company",
         on_delete=models.SET_NULL,
         related_name="dairy_products",
-        null=True,
         blank=True,
+        null=True,
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="dairy_products",
     )
     farm = models.ForeignKey(
         "companies.Farm",
         on_delete=models.SET_NULL,
         related_name="dairy_products",
+        blank=True,
         null=True,
-        blank=True,
-    )
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=220, unique=True)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    unit = models.CharField(max_length=10, choices=Unit.choices, default=Unit.PIECE)
-    quantity_available = models.PositiveIntegerField(default=1)
-    location = models.CharField(max_length=120)
-    image = models.ImageField(upload_to="dairy/products/", blank=True)
-    is_featured = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    like_count = models.PositiveIntegerField(default=0)
-    share_count = models.PositiveIntegerField(default=0)
-    liked_by = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="liked_dairy_products",
-        blank=True,
     )
 
     class Meta:
-        ordering = ("-created_at",)
-        indexes = [
-            models.Index(fields=("category", "location"), name="dairy_prod_category_loc"),
-        ]
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
+        if self.main_category == "items":
+            return reverse("dairys:item_detail", kwargs={"item_id": self.pk})
+        if self.main_category == "livestock":
+            return reverse(
+                "dairys:cattle_livestock_detail",
+                kwargs={"cattle_livestock_id": self.pk},
+            )
         return reverse("dairys:product_detail", kwargs={"slug": self.slug})
 
     @property
-    def display_price(self):
-        return f"ETB {self.price:.2f} / {self.get_unit_display()}"
-
-    def toggle_like(self, user):
-        if self.liked_by.filter(pk=user.pk).exists():
-            self.liked_by.remove(user)
-        else:
-            self.liked_by.add(user)
-        self.like_count = self.liked_by.count()
-        self.save(update_fields=("like_count",))
-        return self.like_count
-
-    def increment_shares(self):
-        self.share_count += 1
-        self.save(update_fields=("share_count",))
-        return self.share_count
+    def seller_name(self):
+        if self.farm_id:
+            return self.farm.name
+        if self.company_id:
+            return self.company.name
+        return self.created_by.get_full_name() or self.created_by.get_username()
 
 
 class DairyService(models.Model):
-    class ServiceType(models.TextChoices):
-        ANIMAL_CARE = "animal_care", "Dairy animal care"
-        FARM_CONSULTING = "farm_consulting", "Farm consulting"
-        MILK_COLLECTION = "milk_collection", "Milk collection"
-        MILK_PROCESSING = "milk_processing", "Milk processing"
-        DELIVERY = "delivery", "Delivery"
-        EQUIPMENT_REPAIR = "equipment_repair", "Equipment repair"
-        TRAINING = "training", "Dairy farming training"
+    CONSULTING_SERVICE_TYPE_VALUES = (
+        "farm_setup",
+        "herd_health",
+        "breeding_ai",
+        "milk_yield",
+    )
+    SERVICE_KIND_CHOICES = [
+        ("training", _("Dairy Farm Training")),
+        ("consulting", _("Dairy Farm Consulting")),
+    ]
+    SERVICE_TYPE_CHOICES = [
+        ("clean_milk_hygiene", _("Clean milk production & hygiene")),
+        ("cattle_feeding", _("Cattle feeding & ration formulation")),
+        ("calf_rearing", _("Calf rearing")),
+        ("processing_workshop", _("Dairy processing workshops")),
+        ("farm_setup", _("Farm setup & barn layout advisory")),
+        ("herd_health", _("Herd health & mastitis prevention")),
+        ("breeding_ai", _("Breeding / AI planning")),
+        ("milk_yield", _("Milk yield optimization")),
+    ]
+    TRAINING_FORMAT_CHOICES = [
+        ("in_person", _("In-person")),
+        ("online", _("Online")),
+    ]
 
+    name = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180, unique=True)
+    service_kind = models.CharField(max_length=20, choices=SERVICE_KIND_CHOICES, default="consulting")
+    service_type = models.CharField(max_length=100, choices=SERVICE_TYPE_CHOICES)
+    description = models.TextField()
+    training_format = models.CharField(max_length=20, choices=TRAINING_FORMAT_CHOICES, blank=True)
+    schedule = models.CharField(max_length=200, blank=True)
+    location = models.CharField(max_length=160, blank=True)
+    service_area = models.CharField(max_length=160, blank=True)
+    availability = models.CharField(max_length=160, blank=True)
+    price = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+    is_available = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     provider = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="dairy_services",
     )
-    company = models.ForeignKey(
-        "companies.Company",
-        on_delete=models.SET_NULL,
-        related_name="dairy_services",
-        null=True,
-        blank=True,
-    )
-    farm = models.ForeignKey(
-        "companies.Farm",
-        on_delete=models.SET_NULL,
-        related_name="dairy_services",
-        null=True,
-        blank=True,
-    )
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=220, unique=True)
-    service_type = models.CharField(max_length=30, choices=ServiceType.choices)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    location = models.CharField(max_length=120)
-    is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ("-created_at",)
+        ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.name} - {self.provider.username}"
+        return self.name
 
     def get_absolute_url(self):
-        return reverse("dairys:dairy_service_detail", kwargs={"slug": self.slug})
+        if self.service_kind == "consulting":
+            return f"{reverse('dairys:veterinary_consultancy')}#consultant-{self.pk}"
+        return reverse("dairys:index")
+
+    @property
+    def display_price(self):
+        if self.price == 0:
+            return _("Free")
+        return f"{self.price:,.2f} ETB"
+
+
+class DairyConsultation(models.Model):
+    STATUS_CHOICES = [
+        ("pending", _("Pending")),
+        ("confirmed", _("Confirmed")),
+        ("completed", _("Completed")),
+        ("cancelled", _("Cancelled")),
+    ]
+
+    name = models.CharField(max_length=160)
+    email = models.EmailField()
+    phone = models.CharField(max_length=40)
+    preferred_date = models.DateField()
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="dairy_consultations",
+        blank=True,
+        null=True,
+    )
+    service = models.ForeignKey(
+        DairyService,
+        on_delete=models.CASCADE,
+        related_name="consultation_requests",
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.service.name}"

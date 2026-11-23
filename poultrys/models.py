@@ -105,7 +105,7 @@ class Item(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('poultrys:item_detail', kwargs={'slug': self.pk})
+        return reverse("poultrys:item_detail", kwargs={"pk": self.pk})
 
     def save(self, *args, **kwargs):
         if not self.slug:

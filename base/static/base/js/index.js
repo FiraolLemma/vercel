@@ -8,12 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const previousButton = carousel.querySelector('.prev-slide');
         const nextButton = carousel.querySelector('.next-slide');
         let activeIndex = Math.max(0, slides.findIndex(slide => slide.classList.contains('active')));
-        if (window.matchMedia('(max-width: 384px)').matches) {
-            const poultrySlideIndex = slides.findIndex(slide =>
-                slide.querySelector('.hero-highlight')?.textContent.toLowerCase().includes('poultry')
-            );
-            if (poultrySlideIndex >= 0) activeIndex = poultrySlideIndex;
-        }
         let timerId;
 
         function showSlide(index) {

@@ -1,5 +1,4 @@
 <!-- base/index.html -->
-
 {% extends 'base/base.html' %}
 {% load i18n %}
 {% load static %}
@@ -7,7 +6,7 @@
 {% block title %}{% trans "Sheger Market | Ethiopian Sheger Marketplace" %}{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'base/css/index.css' %}?v=12">
+<link rel="stylesheet" href="{% static 'base/css/index.css' %}?v=13">
 {% endblock %}
 
 {% block content %}
@@ -133,13 +132,13 @@
                 </summary>
                 <ul class="category-list">
                     <li>
-                        <a class="category-list-link" href="{% url 'dairys:marketplace' %}">
+                        <a class="category-list-link" href="{% url 'dairys:index' %}">
                             <span class="category-list-label"><i class="fas fa-bottle-water" aria-hidden="true"></i>{% trans "Dairy products" %}</span>
                             <span class="category-list-count"><span class="category-count-badge">{{ dairy_product_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
                         </a>
                     </li>
                     <li>
-                        <a class="category-list-link" href="{% url 'dairys:marketplace' %}">
+                        <a class="category-list-link" href="{% url 'dairys:index' %}">
                             <span class="category-list-label"><i class="fas fa-handshake-angle" aria-hidden="true"></i>{% trans "Dairy farm services" %}</span>
                             <span class="category-list-count"><span class="category-count-badge">{{ dairy_service_count }}</span><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
                         </a>
@@ -192,7 +191,7 @@
                 <span class="section-kicker">{% trans "Hand-picked listings" %}</span>
                 <h2 class="section-title" id="featured-title">{% trans "Featured listings" %}</h2>
             </div>
-            <a class="section-link" href="{% url 'dairys:dairy_list' %}">{% trans "Explore dairy farm" %}<i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            <a class="section-link" href="{% url 'dairys:index' %}">{% trans "Explore dairy farm" %}<i class="fas fa-arrow-right" aria-hidden="true"></i></a>
         </div>
 
         <div class="product-grid" id="featured-products-grid">
@@ -274,5 +273,5 @@
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'base/js/index.js' %}?v=5" defer></script>
+<script src="{% static 'base/js/index.js' %}?v=6" defer></script>
 {% endblock %}

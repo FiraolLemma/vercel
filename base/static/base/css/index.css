@@ -2791,17 +2791,29 @@ body {
 
 @media (max-width: 384px) {
     .hero-slider {
+        width: 100%;
         height: clamp(500px, 76vh, 620px);
         min-height: 500px;
-        border-radius: 20px;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .slide .container {
+        width: 100%;
+        max-width: none;
+        padding-inline: 1rem;
     }
 
     .slide-content {
-        width: calc(100% - 4rem);
-        padding: 1.15rem 0.9rem;
-        border-left-width: 3px;
-        border-radius: 0 16px 16px 0;
-        background: rgba(15, 34, 26, 0.58);
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
     }
 
     .hero-eyebrow {
@@ -2819,7 +2831,7 @@ body {
     .slide-content h1,
     .slide-content h2 {
         margin-bottom: 0.7rem;
-        font-size: clamp(1.8rem, 7.8vw, 2.05rem);
+        font-size: clamp(2rem, 10.5vw, 2.6rem);
         line-height: 1.05;
         letter-spacing: -0.05em;
     }
@@ -2836,27 +2848,23 @@ body {
 
     .hero-actions {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.5rem;
-        margin-top: 0.85rem;
+        grid-template-columns: 1.12fr 0.94fr 1.12fr;
+        gap: 0.35rem;
+        margin-top: 1rem;
     }
 
     .hero-action {
         min-width: 0;
-        min-height: 44px;
-        padding: 0.6rem 0.45rem;
-        gap: 0.35rem;
-        font-size: clamp(0.72rem, 3.3vw, 0.84rem);
-        line-height: 1.15;
-        white-space: normal;
-    }
-
-    .hero-action--dairy {
-        grid-column: 1 / -1;
+        min-height: 42px;
+        padding: 0.5rem 0.25rem;
+        gap: 0.2rem;
+        font-size: clamp(0.65rem, 3vw, 0.76rem);
+        line-height: 1.1;
+        white-space: nowrap;
     }
 
     .slider-controls {
-        inset-inline: 0.35rem;
+        display: none;
     }
 
     .prev-slide,
@@ -2867,6 +2875,10 @@ body {
 
     .slider-dots {
         bottom: 0.85rem;
+    }
+
+    .feature-strip {
+        margin-top: 0;
     }
 }
 
