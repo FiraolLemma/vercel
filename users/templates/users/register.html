@@ -2,55 +2,109 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}
-  {% trans " Register | Ethiopian Sheger Market place" %}
-{% endblock %}
+{% block title %}{% trans "Create account | Sheger City" %}{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'users/css/register.css' %}">
+<link rel="stylesheet" href="{% static 'users/css/auth.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="registration-container">
-    <h2>{% trans "Create Your Account" %}</h2>
-    <form method="post" class="registration-form" autocomplete="on">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
+<main class="auth-page auth-page--register">
+    <div class="auth-layout">
+        <section class="auth-intro" aria-labelledby="auth-intro-title">
+            <a class="auth-brand" href="{% url 'base:index' %}" aria-label="{% trans 'Sheger City home' %}">
+                <span class="auth-brand__icon"><i class="fas fa-leaf" aria-hidden="true"></i></span>
+                <span>Sheger<span class="auth-brand__accent">City</span></span>
+            </a>
 
-        <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">{% trans "Username:" %}</label>
-            {{ form.username }}
-            {{ form.username.errors }}
-        </div>
+            <div class="auth-intro__copy">
+                <span class="auth-eyebrow"><i class="fas fa-seedling" aria-hidden="true"></i> {% trans "Ethiopia's local marketplace" %}</span>
+                <h1 id="auth-intro-title">{% trans "Let’s grow together." %}</h1>
+                <p>{% trans "Join a community connecting local farmers, suppliers, service providers, and customers." %}</p>
+            </div>
 
-        <div class="form-group">
-            <label for="{{ form.phone_number.id_for_label }}">{% trans "Phone Number:" %}</label>
-            {{ form.phone_number }}
-            {{ form.phone_number.errors }}
-            <small>Format: +251 9...</small>
-        </div>
+            <ul class="auth-benefits" aria-label="{% trans 'Marketplace benefits' %}">
+                <li><span class="auth-benefits__icon"><i class="fas fa-handshake" aria-hidden="true"></i></span><span>{% trans "Find people and services you can trust" %}</span></li>
+                <li><span class="auth-benefits__icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span><span>{% trans "Discover new ways to grow your business" %}</span></li>
+            </ul>
 
-        <div class="form-group">
-            <label for="{{ form.pin1.id_for_label }}">{{ form.pin1.label }}:</label>
-            {{ form.pin1 }}
-            {{ form.pin1.errors }}
-        </div>
+            <span class="auth-orbit auth-orbit--one" aria-hidden="true"></span>
+            <span class="auth-orbit auth-orbit--two" aria-hidden="true"></span>
+            <span class="auth-leaf auth-leaf--one" aria-hidden="true"><i class="fas fa-leaf"></i></span>
+            <span class="auth-leaf auth-leaf--two" aria-hidden="true"><i class="fas fa-wheat-awn"></i></span>
+        </section>
 
-        <div class="form-group">
-            <label for="{{ form.pin2.id_for_label }}">{{ form.pin2.label }}:</label>
-            {{ form.pin2 }}
-            {{ form.pin2.errors }}
-        </div>
+        <section class="auth-card" aria-labelledby="auth-title">
+            <div class="auth-card__topline">
+                <span class="auth-card__mobile-brand"><i class="fas fa-leaf" aria-hidden="true"></i> Sheger<span>City</span></span>
+                <span class="auth-step"><i class="fas fa-user-plus" aria-hidden="true"></i> {% trans "Free to join" %}</span>
+            </div>
 
-        <button type="submit" class="registerbtn">{% trans "Continue to profile setup" %}</button>
-    </form>
+            <header class="auth-card__header">
+                <span class="auth-card__icon"><i class="fas fa-user-plus" aria-hidden="true"></i></span>
+                <h2 id="auth-title">{% trans "Create your account" %}</h2>
+                <p>{% trans "Start with a few details. You can complete your profile next." %}</p>
+            </header>
 
-    <div class="login-link">
-        {% trans "Already have an account?" %} <a href="{% url 'users:login' %}">{% trans "Login here" %}</a>
+            <form method="post" class="auth-form auth-form--register" autocomplete="on">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="auth-field">
+                    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                    <div class="auth-field__control">
+                        {{ form.username }}
+                        <span class="auth-field__icon"><i class="fas fa-user" aria-hidden="true"></i></span>
+                    </div>
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="auth-field">
+                    <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                    <div class="auth-field__control">
+                        {{ form.phone_number }}
+                        <span class="auth-field__icon"><i class="fas fa-phone" aria-hidden="true"></i></span>
+                    </div>
+                    {{ form.phone_number.errors }}
+                    <p class="auth-field__hint">{% trans "Use your Ethiopian phone number, for example +251 9..." %}</p>
+                </div>
+
+                <div class="auth-field">
+                    <label for="{{ form.pin1.id_for_label }}">{{ form.pin1.label }}</label>
+                    <div class="auth-field__control">
+                        {{ form.pin1 }}
+                        <button class="auth-password-toggle" type="button" aria-controls="{{ form.pin1.id_for_label }}" aria-label="{% trans 'Show PIN' %}" data-show-label="{% trans 'Show PIN' %}" data-hide-label="{% trans 'Hide PIN' %}">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {{ form.pin1.errors }}
+                    <p class="auth-field__hint">{% trans "Choose a 4-digit PIN to keep your account secure." %}</p>
+                </div>
+
+                <div class="auth-field">
+                    <label for="{{ form.pin2.id_for_label }}">{{ form.pin2.label }}</label>
+                    <div class="auth-field__control">
+                        {{ form.pin2 }}
+                        <button class="auth-password-toggle" type="button" aria-controls="{{ form.pin2.id_for_label }}" aria-label="{% trans 'Show PIN' %}" data-show-label="{% trans 'Show PIN' %}" data-hide-label="{% trans 'Hide PIN' %}">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {{ form.pin2.errors }}
+                </div>
+
+                <button type="submit" class="auth-submit">
+                    <span>{% trans "Continue to profile setup" %}</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <p class="auth-switch">{% trans "Already have an account?" %} <a href="{% url 'users:login' %}">{% trans "Login here" %}</a></p>
+            <a class="auth-back-link" href="{% url 'base:index' %}"><i class="fas fa-arrow-left" aria-hidden="true"></i> {% trans "Back to marketplace" %}</a>
+        </section>
     </div>
-</div>
+</main>
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'users/js/register.js' %}"></script>
+<script src="{% static 'users/js/auth.js' %}" defer></script>
 {% endblock %}
