@@ -17,8 +17,8 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load local environment variables
-load_dotenv(BASE_DIR / '.env')
-load_dotenv(BASE_DIR / '.env.local', override=True)
+load_dotenv(BASE_DIR / '.env', override=False)
+load_dotenv(BASE_DIR / '.env.local', override=False)
 
 IS_VERCEL = os.getenv('VERCEL', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
