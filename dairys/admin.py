@@ -18,9 +18,29 @@ class DairyCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(DairyProduct)
 class DairyProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "main_category", "category", "item_group", "price", "location", "is_featured")
+    list_display = (
+        "name",
+        "main_category",
+        "category",
+        "item_group",
+        "livestock_type",
+        "breed",
+        "price",
+        "location",
+        "is_featured",
+    )
     list_filter = ("main_category", "category", "item_group", "is_featured", "milk_source", "livestock_type")
-    search_fields = ("name", "description", "breed", "location")
+    search_fields = (
+        "name",
+        "description",
+        "subcategory",
+        "item_group",
+        "breed",
+        "location",
+        "created_by__username",
+        "company__name",
+        "farm__name",
+    )
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -30,6 +50,8 @@ class DairyServiceAdmin(admin.ModelAdmin):
         "name",
         "service_kind",
         "service_type",
+        "training_date",
+        "duration_hours",
         "provider",
         "price",
         "is_available",
@@ -53,9 +75,27 @@ class DairyServiceAdmin(admin.ModelAdmin):
 
 @admin.register(TrainingEnrollment)
 class TrainingEnrollmentAdmin(admin.ModelAdmin):
-    list_display = ("name", "get_topic_display", "format", "email", "created_at")
-    list_filter = ("topic", "format")
-    search_fields = ("name", "email", "phone")
+    list_display = (
+        "name",
+        "training",
+        "trainee",
+        "get_topic_display",
+        "format",
+        "status",
+        "created_at",
+    )
+    list_filter = ("status", "topic", "format", "training__service_type")
+    search_fields = (
+        "name",
+        "email",
+        "phone",
+        "training__name",
+        "trainee__username",
+        "training__provider__username",
+    )
+    readonly_fields = ("created_at",)
+    list_select_related = ("training", "trainee", "training__provider")
+    list_per_page = 30
 
 
 @admin.register(DairyConsultation)
