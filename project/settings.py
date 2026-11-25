@@ -232,32 +232,22 @@ DAPHNE_TIMEOUT = 50
 # DATABASE CONFIGURATION - NEON POSTGRESQL
 # ==========================================================
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=0 if IS_VERCEL else 600,
-            ssl_require=not DEBUG,
-        )
-    }
-
-elif IS_VERCEL:
+if not DATABASE_URL:
     raise ImproperlyConfigured(
-        'DATABASE_URL is required on Vercel. '
-        'Configure your Neon PostgreSQL connection.'
+        "DATABASE_URL is required. "
+        "Configure your Neon PostgreSQL connection for local "
+        "development and Vercel production."
     )
 
-else:
-    # Local development fallback
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
+DATABASES = {
+    "default": dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=0 if IS_VERCEL else 600,
+        ssl_require=True,
+    )
+}
 
 # ==========================================================
 # REDIS AND DJANGO CHANNELS
