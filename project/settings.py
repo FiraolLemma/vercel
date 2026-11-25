@@ -43,43 +43,43 @@ if not SECRET_KEY:
 # HOST CONFIGURATION
 # ==========================================================
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv(
-        'ALLOWED_HOSTS',
-        'localhost,127.0.0.1'
-    ).split(',')
-    if host.strip()
+# Allowed hosts
+DEFAULT_ALLOWED_HOSTS = [
+    'fraollemma0506.pro.et',
+    'www.fraollemma0506.pro.et',
+    '.vercel.app',
+    'localhost',
+    '127.0.0.1',
 ]
+
+ALLOWED_HOSTS = list(dict.fromkeys(
+    DEFAULT_ALLOWED_HOSTS + [
+        host.strip()
+        for host in os.getenv('ALLOWED_HOSTS', '').split(',')
+        if host.strip()
+    ]
+))
 
 render_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-
-vercel_hostnames = [
-    os.getenv('VERCEL_URL'),
-    os.getenv('VERCEL_BRANCH_URL'),
-]
-
-for hostname in [render_hostname, *vercel_hostnames]:
-    if hostname:
-        hostname = hostname.removeprefix('https://').removeprefix('http://').rstrip('/')
-        if hostname not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(hostname)
-
-if IS_VERCEL and '.vercel.app' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('.vercel.app')
-
+if render_hostname and render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_hostname)
 
 # ==========================================================
 # CSRF CONFIGURATION
 # ==========================================================
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://fraollemma0506.pro.et',
+    'https://www.fraollemma0506.pro.et',
+]
+
+CSRF_TRUSTED_ORIGINS.extend([
     origin.strip().rstrip('/')
     for origin in os.getenv(
         'CSRF_TRUSTED_ORIGINS', ''
-    ).split(',')
+        ).split(',')
     if origin.strip()
-]
+])
 
 if DEBUG:
     CSRF_TRUSTED_ORIGINS.extend([
@@ -87,13 +87,10 @@ if DEBUG:
         'http://127.0.0.1:8000',
     ])
 
-for hostname in [render_hostname, *vercel_hostnames]:
-    if hostname:
-        hostname = hostname.removeprefix('https://').removeprefix('http://').rstrip('/')
-        CSRF_TRUSTED_ORIGINS.append(f'https://{hostname}')
+if render_hostname:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{render_hostname}')
 
 CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
-
 
 # ==========================================================
 # SECURITY SETTINGS
@@ -103,9 +100,8 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
 SECURE_PROXY_SSL_HEADER = (
-    ('HTTP_X_FORWARDED_PROTO', 'https')
-    if IS_VERCEL or IS_RENDER
-    else None
+    'HTTP_X_FORWARDED_PROTO',
+    'https'
 )
 
 SECURE_SSL_REDIRECT = (
